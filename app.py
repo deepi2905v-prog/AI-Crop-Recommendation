@@ -7,10 +7,16 @@ app = Flask(__name__)
 # Load trained Random Forest model
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(BASE_DIR , "data","crop_model.pkl")
+model = None
+model_error = None
+try:
+    model = joblib.load(MODEL_PATH)
+except Exception as e:
+    model_error = str(e)
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html" , prediction=None,error=model_error)
 
 
 @app.route("/predict", methods=["POST"])

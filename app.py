@@ -1,0 +1,38 @@
+from flask import Flask ,request, jsonify, render_template
+import joblib
+import os
+
+app = Flask(__name__)
+
+# Load trained Random Forest model
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR , "data","crop_model.pkl")
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.get_json()
+
+    features = [[
+        float(data["N"]),
+        float(data["P"]),
+        float(data["K"]),
+        float(data["temperature"]),
+        float(data["humidity"]),
+        float(data["ph"]),
+        float(data["rainfall"])
+    ]]
+
+    prediction = model.predict(features)[0]
+
+    return jsonify({
+        "crop": prediction
+    })
+
+
+if __name__ == "__main__":
+    app.run(debug=True, use_reloader=False)
